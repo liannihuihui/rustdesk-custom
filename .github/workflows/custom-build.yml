@@ -42,7 +42,6 @@ jobs:
         with:
           path: |
             C:\vcpkg\installed
-            vcpkg_installed
           key: ${{ runner.os }}-vcpkg-${{ env.VCPKG_COMMIT_ID }}-${{ hashFiles('**/vcpkg.json') }}
 
       - name: Setup vcpkg
@@ -52,11 +51,12 @@ jobs:
           git checkout ${{ env.VCPKG_COMMIT_ID }}
           .\bootstrap-vcpkg.bat
           echo "VCPKG_ROOT=C:\vcpkg" >> $env:GITHUB_ENV
+          echo "VCPKG_INSTALLATION_ROOT=C:\vcpkg" >> $env:GITHUB_ENV
 
       - name: Install dependencies
         run: |
           cd ${{ github.workspace }}
-          C:\vcpkg\vcpkg install --triplet x64-windows-static
+          C:\vcpkg\vcpkg install --triplet x64-windows-static --x-install-root=C:\vcpkg\installed
 
       - name: Build RustDesk
         run: |
@@ -121,7 +121,6 @@ jobs:
         with:
           path: |
             /opt/artifacts/vcpkg/installed
-            vcpkg_installed
           key: ${{ runner.os }}-vcpkg-${{ env.VCPKG_COMMIT_ID }}-${{ hashFiles('**/vcpkg.json') }}
 
       - name: Setup vcpkg
@@ -135,7 +134,7 @@ jobs:
       - name: Install vcpkg dependencies
         run: |
           cd ${{ github.workspace }}
-          /opt/artifacts/vcpkg/vcpkg install
+          /opt/artifacts/vcpkg/vcpkg install --x-install-root=/opt/artifacts/vcpkg/installed
 
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
@@ -146,6 +145,8 @@ jobs:
       - name: Build RustDesk
         run: |
           python3 build.py --flutter --hwcodec
+        env:
+          VCPKG_ROOT: /opt/artifacts/vcpkg
 
       - name: Create DEB package
         run: |
