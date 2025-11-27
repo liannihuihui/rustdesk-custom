@@ -60,7 +60,7 @@ jobs:
 
       - name: Build RustDesk
         run: |
-          python build.py --flutter --hwcodec --release
+          python build.py --flutter --hwcodec
 
       - name: Create installer
         run: |
@@ -145,7 +145,7 @@ jobs:
 
       - name: Build RustDesk
         run: |
-          python3 build.py --flutter --hwcodec --release
+          python3 build.py --flutter --hwcodec
 
       - name: Create DEB package
         run: |
