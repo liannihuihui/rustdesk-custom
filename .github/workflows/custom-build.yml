@@ -42,7 +42,7 @@ jobs:
         with:
           path: |
             C:\vcpkg\installed
-          key: ${{ runner.os }}-vcpkg-${{ env.VCPKG_COMMIT_ID }}-${{ hashFiles('**/vcpkg.json') }}
+          key: ${{ runner.os }}-vcpkg-classic-${{ env.VCPKG_COMMIT_ID }}-v1
 
       - name: Setup vcpkg
         run: |
@@ -55,8 +55,7 @@ jobs:
 
       - name: Install dependencies
         run: |
-          cd ${{ github.workspace }}
-          C:\vcpkg\vcpkg install --triplet x64-windows-static --x-install-root=C:\vcpkg\installed
+          C:\vcpkg\vcpkg install libvpx:x64-windows-static libyuv:x64-windows-static opus:x64-windows-static aom:x64-windows-static libjpeg-turbo:x64-windows-static ffmpeg[core,avcodec,avformat]:x64-windows-static mfx-dispatch:x64-windows-static --classic
 
       - name: Build RustDesk
         run: |
@@ -121,7 +120,7 @@ jobs:
         with:
           path: |
             /opt/artifacts/vcpkg/installed
-          key: ${{ runner.os }}-vcpkg-${{ env.VCPKG_COMMIT_ID }}-${{ hashFiles('**/vcpkg.json') }}
+          key: ${{ runner.os }}-vcpkg-classic-${{ env.VCPKG_COMMIT_ID }}-v1
 
       - name: Setup vcpkg
         run: |
@@ -133,8 +132,7 @@ jobs:
 
       - name: Install vcpkg dependencies
         run: |
-          cd ${{ github.workspace }}
-          /opt/artifacts/vcpkg/vcpkg install --x-install-root=/opt/artifacts/vcpkg/installed
+          /opt/artifacts/vcpkg/vcpkg install libvpx libyuv opus aom --classic
 
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
